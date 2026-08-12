@@ -12,9 +12,9 @@ from backend.tags.tag_routes import tags
 from backend.reviews.review_routes import reviews
 from backend.venues.venue_routes import venues
 
-from backend.ngos.ngo_routes import ngos
-from backend.maya.maya_routes import maya
-
+# The maya blueprint lives at api/maya/ rather than under api/backend/ like the
+# others, so it is imported as a top-level package from the /apicode workdir.
+from maya.maya_routes import maya
 
 
 def create_app():
@@ -51,9 +51,6 @@ def create_app():
     app.register_blueprint(tags, url_prefix="/tag")
     app.register_blueprint(reviews, url_prefix="/review")
     app.register_blueprint(venues, url_prefix="/venue")
-
-    app.register_blueprint(ngos, url_prefix="/ngo")
     app.register_blueprint(maya, url_prefix="/maya")
-
 
     return app

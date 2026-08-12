@@ -18,6 +18,6 @@ st.write(
 
 st.info(
     "No concertgoer routes exist in the API yet. The pages arrive as the route "
-    "files land — see the resources table for what each one owes this role.",
+    "files land. See the resources table for what each one owes this role.",
     icon="🚧",
 )

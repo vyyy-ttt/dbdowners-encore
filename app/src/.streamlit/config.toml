@@ -2,7 +2,7 @@
 # Streamlit configuration for this app.
 #
 # Theme and client settings below are picked up as soon as you save this
-# file — no container restart needed. Refresh the browser tab if a change
+# file, with no container restart needed. Refresh the browser tab if a change
 # doesn't appear. If it still doesn't, restart: docker compose restart app
 #
 # Full list of options:
@@ -26,45 +26,47 @@ toolbarMode = "minimal"
 runOnSave = true
 
 # ------------------------------------------------------------
-# Theme — the main content area.
+# Theme: the main content area.
 # Colors are hex strings. Fonts are "sans-serif", "serif", or "monospace".
 # ------------------------------------------------------------
 [theme]
 base = "light"
 
 # Accent color: buttons, sliders, focus rings, selected states.
-primaryColor = "#2C6E63"
+# The violet from the Encore wireframes.
+primaryColor = "#7C4DFF"
 
-# Page background and the shade used for cards, code blocks, and tables.
-backgroundColor = "#FBFAF7"
-secondaryBackgroundColor = "#F1EFE9"
+# A very light grey page with white cards on top of it, matching the
+# wireframes' card-on-canvas layout.
+backgroundColor = "#F6F6FA"
+secondaryBackgroundColor = "#FFFFFF"
 
 # Body text and links.
-textColor = "#1F2421"
-linkColor = "#2C6E63"
+textColor = "#191A2C"
+linkColor = "#6A3BEF"
 
-# Serif headings against sans-serif body text keeps headings distinct
-# without needing custom CSS. Code stays monospace, where it belongs.
+# The wireframes use one bold sans family throughout, so headings differ from
+# body text by weight and size rather than by family.
 font = "sans-serif"
-headingFont = "serif"
+headingFont = "sans-serif"
 codeFont = "monospace"
 
-# Slightly squared corners read as more deliberate than the rounded default.
-baseRadius = "small"
-buttonRadius = "small"
+# Generously rounded corners are the most recognisable trait of the wireframes.
+baseRadius = "medium"
+buttonRadius = "medium"
 
 # Give inputs a visible outline so form fields read as fields.
-borderColor = "#E0DCD2"
+borderColor = "#E5E5F0"
 showWidgetBorder = true
 
 # ------------------------------------------------------------
-# Theme — the sidebar, which inherits from [theme] unless overridden.
+# Theme: the sidebar, which inherits from [theme] unless overridden.
 # A dark sidebar against the light content area is what stops this looking
 # like a stock Streamlit app.
 # ------------------------------------------------------------
 [theme.sidebar]
-backgroundColor = "#232B2B"
-secondaryBackgroundColor = "#33403D"
-textColor = "#E9EDEB"
-primaryColor = "#4E9C8D"
-borderColor = "#33403D"
+backgroundColor = "#17182B"
+secondaryBackgroundColor = "#242641"
+textColor = "#E8E9F5"
+primaryColor = "#A78BFF"
+borderColor = "#262845"

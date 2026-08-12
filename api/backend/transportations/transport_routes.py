@@ -113,7 +113,7 @@ def get_transportation(transport_id):
 
 
 # Return every transportation method for one venue, cheapest first.
-# Supports user story 1.6 — seeing how to get to a specific venue.
+# Supports user story 1.6: seeing how to get to a specific venue.
 # Example: /transport/venues/1/transportations
 @transportations.route("/venues/<int:venue_id>/transportations", methods=["GET"])
 def get_venue_transportations(venue_id):
@@ -161,7 +161,7 @@ def create_transportation():
         # so the database will not assign one and cursor.lastrowid stays 0. The caller
         # can pass an explicit transport_id; otherwise we take the next one after the
         # current max. Two simultaneous inserts could pick the same id and one would
-        # lose on the primary key — acceptable here, but making the column
+        # lose on the primary key. Acceptable here, but making the column
         # AUTO_INCREMENT in encore.sql is the real fix.
         transport_id = data.get("transport_id")
         if transport_id is None:
