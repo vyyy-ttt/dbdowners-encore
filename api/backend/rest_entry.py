@@ -11,10 +11,10 @@ from backend.transportations.transport_routes import transportations
 from backend.tags.tag_routes import tags
 from backend.reviews.review_routes import reviews
 from backend.venues.venue_routes import venues
-
-# The maya blueprint lives at api/maya/ rather than under api/backend/ like the
-# others, so it is imported as a top-level package from the /apicode workdir.
-from maya.maya_routes import maya
+from backend.maya.maya_routes import maya
+from backend.tours.tour_routes import tours
+from backend.followers.follower_routes import followers
+from backend.users.user_routes import users
 
 
 def create_app():
