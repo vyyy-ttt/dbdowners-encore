@@ -33,6 +33,19 @@ def map_demo_nav():
     st.sidebar.page_link("pages/02_Map_Demo.py", label="Map Demonstration", icon="🗺️")
 
 
+def maya_home_nav():
+    st.sidebar.page_link("pages/00_Maya_Home.py", label="Maya Home", icon="🎵")
+
+def maya_log_review_nav():
+    st.sidebar.page_link("pages/01_Maya_Log_Review.py", label="Log & Review", icon="✍️")
+
+def maya_profile_nav():
+    st.sidebar.page_link("pages/02_Maya_Profile.py", label="My Profile", icon="👤")
+
+def maya_search_nav():
+    st.sidebar.page_link("pages/03_Maya_Search.py", label="Search Shows", icon="🔎")
+
+
 # ---- Role: usaid_worker -----------------------------------------------------
 
 def usaid_worker_home_nav():
@@ -114,6 +127,12 @@ def SideBarLinks(show_home=False):
         if st.session_state["role"] == "administrator":
             admin_home_nav()
             ml_model_mgmt_nav()
+
+        if st.session_state["role"] == "casual_concertgoer":
+            maya_home_nav()
+            maya_log_review_nav()
+            maya_profile_nav()
+            maya_search_nav()
 
     # About link appears at the bottom for all roles
     about_page_nav()
