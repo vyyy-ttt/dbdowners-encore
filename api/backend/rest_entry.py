@@ -7,6 +7,7 @@ from backend.db_connection import init_app as init_db
 from backend.simple.simple_routes import simple_routes
 from backend.ngos.ngo_routes import ngos
 from backend.reports.report_routes import reports
+from backend.reviews.review_routes import reviews
 
 
 def create_app():
