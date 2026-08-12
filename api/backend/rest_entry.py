@@ -6,8 +6,13 @@ import logging
 from backend.db_connection import init_app as init_db
 from backend.simple.simple_routes import simple_routes
 from backend.reports.report_routes import reports
+<<<<<<< HEAD
 from backend.transportations.transport_routes import transportations
 from backend.tags.tag_routes import tags
+=======
+from backend.reviews.review_routes import reviews
+from backend.venues.venue_routes import venues
+>>>>>>> vys-branch
 
 
 def create_app():
@@ -39,7 +44,12 @@ def create_app():
     app.logger.info("create_app(): registering blueprints")
     app.register_blueprint(simple_routes)
     app.register_blueprint(reports, url_prefix="/report")
+<<<<<<< HEAD
     app.register_blueprint(transportations, url_prefix="/transport")
     app.register_blueprint(tags, url_prefix="/tag")
+=======
+    app.register_blueprint(reviews, url_prefix="/review")
+    app.register_blueprint(venues, url_prefix="/venue")
+>>>>>>> vys-branch
 
     return app
