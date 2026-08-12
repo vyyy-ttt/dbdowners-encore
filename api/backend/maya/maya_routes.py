@@ -2,13 +2,15 @@
 ########################################################
 # Maya ("Casual Concertgoer") persona blueprint.
 #
-# Covers Maya's 6 user stories (1.1 - 1.6):
-#   1.1  Write a review for an artist / show / venue        (POST)
-#   1.2  See personal concert stats                         (GET)
-#   1.3  Follow / unfollow friends, view a friend's reviews (POST / DELETE / GET)
-#   1.4  Update a rating after seeing an artist again       (PUT)
-#   1.5  Search shows & venues to view and log              (GET)
-#   1.6  See how people get to a venue + accessibility      (GET)
+# Covers Maya's user stories that are specific to her own
+# concert history and reviews. Follow/unfollow lives in the
+# separate `followers` blueprint.
+#
+#   1.1  Write / update / delete a review        (POST / PUT / DELETE)
+#   1.2  See personal concert stats              (GET)
+#   1.3  View reviews from people she follows     (GET)
+#   1.5  Search shows + log a show she attended   (GET / POST)
+#   1.6  See how people get to a venue + access   (GET)
 #
 # Registered in rest_entry.py with url_prefix="/maya".
 ########################################################
@@ -23,7 +25,6 @@ maya = Blueprint("maya", __name__)
 # ------------------------------------------------------------
 # 1.5  Search shows (optionally by city / on-or-after a date).
 # GET /maya/shows?city=Boston&from_date=2026-08-09
-# Returns upcoming/matching shows so Maya can pick one to log.
 # ------------------------------------------------------------
 @maya.route("/shows", methods=["GET"])
 def search_shows():
@@ -78,7 +79,6 @@ def search_shows():
 # ------------------------------------------------------------
 # 1.5 (log a show) — record that Maya attended a show.
 # POST /maya/users/<user_id>/shows   body: { "show_id": 1 }
-# Writes into the user_show bridge table.
 # ------------------------------------------------------------
 @maya.route("/users/<int:user_id>/shows", methods=["POST"])
 def log_show(user_id):
@@ -137,8 +137,7 @@ def get_venue_transportation(venue_id):
 
 
 # ------------------------------------------------------------
-# 1.2  Aggregated personal stats for a user:
-#      total shows attended, average ticket price, most-seen artist.
+# 1.2  Aggregated personal stats for a user.
 # GET /maya/users/<user_id>/stats
 # ------------------------------------------------------------
 @maya.route("/users/<int:user_id>/stats", methods=["GET"])
@@ -147,7 +146,6 @@ def get_user_stats(user_id):
     try:
         current_app.logger.info(f"GET /maya/users/{user_id}/stats")
 
-        # Totals across every show this user has attended.
         cursor.execute(
             """SELECT COUNT(*)               AS total_shows_attended,
                       AVG(s.avg_ticket_price) AS average_ticket_price
@@ -158,7 +156,6 @@ def get_user_stats(user_id):
         )
         totals = cursor.fetchone()
 
-        # Most-seen artist (top by number of attended shows).
         cursor.execute(
             """SELECT a.artist_name, COUNT(*) AS times_seen
                FROM user_show us
@@ -231,7 +228,6 @@ def get_user_reviews(user_id):
 # POST /maya/reviews
 # body: { author_user_id, rating, review_text,
 #         about_artist_id? , about_show_id? , about_venue_id? }
-# Exactly one of the three "about_*" targets should be provided.
 # ------------------------------------------------------------
 @maya.route("/reviews", methods=["POST"])
 def create_review():
@@ -298,7 +294,6 @@ def update_review(review_id):
         if not update_fields:
             return jsonify({"error": "No valid fields to update"}), 400
 
-        # Always bump last_updated when a review changes.
         update_fields.append("last_updated = NOW()")
         params.append(review_id)
 
@@ -337,84 +332,8 @@ def delete_review(review_id):
 
 
 # ------------------------------------------------------------
-# 1.3  See who a user follows (so Maya can browse friends).
-# GET /maya/users/<user_id>/following
-# ------------------------------------------------------------
-@maya.route("/users/<int:user_id>/following", methods=["GET"])
-def get_following(user_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        current_app.logger.info(f"GET /maya/users/{user_id}/following")
-        cursor.execute(
-            """SELECT u.user_id, u.first_name, u.last_name, u.username, f.followed_on
-               FROM follows f
-               JOIN user u ON f.followee_id = u.user_id
-               WHERE f.follower_id = %s
-               ORDER BY f.followed_on DESC""",
-            (user_id,),
-        )
-        return jsonify(cursor.fetchall()), 200
-    except Error as e:
-        current_app.logger.error(f"DB error in get_following: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-
-# ------------------------------------------------------------
-# 1.3  Follow a friend.
-# POST /maya/follows   body: { follower_id, followee_id }
-# ------------------------------------------------------------
-@maya.route("/follows", methods=["POST"])
-def create_follow():
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        data = request.get_json() or {}
-        if "follower_id" not in data or "followee_id" not in data:
-            return jsonify({"error": "Missing required field: follower_id and followee_id"}), 400
-
-        if data["follower_id"] == data["followee_id"]:
-            return jsonify({"error": "A user cannot follow themselves"}), 400
-
-        cursor.execute(
-            "INSERT INTO follows (follower_id, followee_id) VALUES (%s, %s)",
-            (data["follower_id"], data["followee_id"]),
-        )
-        get_db().commit()
-        return jsonify({"message": "Follow relationship created"}), 201
-    except Error as e:
-        current_app.logger.error(f"DB error in create_follow: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-
-# ------------------------------------------------------------
-# 1.3  Unfollow a friend.
-# DELETE /maya/follows/<follower_id>/<followee_id>
-# ------------------------------------------------------------
-@maya.route("/follows/<int:follower_id>/<int:followee_id>", methods=["DELETE"])
-def delete_follow(follower_id, followee_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        cursor.execute(
-            "DELETE FROM follows WHERE follower_id = %s AND followee_id = %s",
-            (follower_id, followee_id),
-        )
-        get_db().commit()
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Follow relationship not found"}), 404
-        return jsonify({"message": "Unfollowed successfully"}), 200
-    except Error as e:
-        current_app.logger.error(f"DB error in delete_follow: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-
-# ------------------------------------------------------------
-# 1.3  View a friend's reviews (their public concert opinions).
-# GET /maya/users/<user_id>/friends-reviews  -> reviews by everyone user follows
+# 1.3  View reviews from everyone a user follows (friends' feed).
+# GET /maya/users/<user_id>/friends-reviews
 # ------------------------------------------------------------
 @maya.route("/users/<int:user_id>/friends-reviews", methods=["GET"])
 def get_friends_reviews(user_id):
