@@ -107,7 +107,7 @@ def update_user(user_id):
             return jsonify({"error": "User not found"}), 404
 
         allowed = ["account_status", "first_name", "last_name",
-                   "email_address", "username", "suspended_by_id"]
+                   "email_address", "username", "suspended_by_id", "sus_start_date", "sus_end_date"]
         update_fields = [f"{f} = %s" for f in allowed if f in data]
         params = [data[f] for f in allowed if f in data]
 
