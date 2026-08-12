@@ -75,7 +75,7 @@ def show_result(result, expected_status=None):
     summary = f"`{result['method']} {result['url']}` → **{status}** ({result['elapsed_ms']:.0f} ms)"
 
     if expected_status is not None and status != expected_status:
-        st.error(f"{summary} — expected {expected_status}")
+        st.error(f"{summary} (expected {expected_status})")
     elif status < 300:
         st.success(summary)
     elif status < 500:
@@ -336,14 +336,14 @@ with tag_tab:
     st.warning(
         "`review_tag.tag_id` is declared `ON DELETE RESTRICT`, so a tag that any "
         "review still carries cannot be deleted. Every seeded tag is in use, so "
-        "deleting one should come back **409** with a `reviews_using_tag` count — "
-        "that is the constraint working, not a failure."
+        "deleting one should come back **409** with a `reviews_using_tag` count. "
+        "That is the constraint working, not a failure."
     )
 
     existing_tags = fetch_list("/tag/tags")
     if existing_tags:
         labels = {
-            f"{t['tag_id']} — {t['tag_name']}": t["tag_id"] for t in existing_tags
+            f"{t['tag_id']}: {t['tag_name']}": t["tag_id"] for t in existing_tags
         }
         dcol1, dcol2 = st.columns([2, 1])
         with dcol1:

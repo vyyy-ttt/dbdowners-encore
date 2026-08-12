@@ -24,7 +24,8 @@ def get_all_reviews():
         tag_id = request.args.get("tag_id")
 
         # WHERE 1=1 lets us append AND clauses cleanly without special-casing the first filter
-        query = "SELECT DISTINCT r.* FROM review"
+        # The `r` alias is required: every condition below is written as r.<column>
+        query = "SELECT DISTINCT r.* FROM review r"
         joins = []
         conditions = ["1=1"]
         params = []
