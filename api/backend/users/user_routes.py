@@ -60,24 +60,23 @@ def get_user(user_id):
 
 # Create a new user.
 # Example: POST /user/users
-# body: { user_id, first_name, last_name, email_address, username }
+# body: { first_name, last_name, email_address, username }
 @users.route("/users", methods=["POST"])
 def create_user():
     cursor = get_db().cursor(dictionary=True)
     try:
         data = request.get_json() or {}
 
-        required = ["user_id", "email_address", "username"]
+        required = ["email_address", "username"]
         for field in required:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
 
         cursor.execute(
             """INSERT INTO user
-                   (user_id, first_name, last_name, email_address, username)
+                   (first_name, last_name, email_address, username)
                VALUES (%s, %s, %s, %s, %s)""",
             (
-                data["user_id"],
                 data.get("first_name"),
                 data.get("last_name"),
                 data["email_address"],
@@ -86,7 +85,7 @@ def create_user():
         )
         get_db().commit()
         return jsonify({"message": "User created successfully",
-                        "user_id": data["user_id"]}), 201
+                        "user_id": cursor.lastrowid}), 201
     except Error as e:
         current_app.logger.error(f'Database error in create_user: {e}')
         return jsonify({"error": str(e)}), 500
