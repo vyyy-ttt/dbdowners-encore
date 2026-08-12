@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
-# Create a Blueprint for NGO routes
+# Create a Blueprint for report routes
 reports = Blueprint("reports", __name__)
 
 
@@ -99,7 +99,7 @@ def create_report():
 
 # Update a report
 # Can update only is_resolved
-# Example: PUT /ngo/ngos/1 with JSON body containing fields to update
+# Example: PUT /report/reports/1 with JSON body containing fields to update
 @reports.route("/reports/<int:report_id>", methods=["PUT"])
 def update_report(report_id):
     cursor = get_db().cursor(dictionary=True)

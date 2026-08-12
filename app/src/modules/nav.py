@@ -1,6 +1,8 @@
 # Idea borrowed from https://github.com/fsmosca/sample-streamlit-authenticator
 
 # This file has functions to add links to the left sidebar based on the user's role.
+# The roles match the ones in the database schema: user, venue_manager,
+# tour_manager, and app_admin.
 
 import streamlit as st
 
@@ -12,68 +14,42 @@ def home_nav():
 
 
 def about_page_nav():
-    st.sidebar.page_link("pages/30_About.py", label="About", icon="🧠")
+    st.sidebar.page_link("pages/40_About.py", label="About", icon="🧠")
 
 
-# ---- Role: pol_strat_advisor ------------------------------------------------
+# ---- Role: user (concertgoer) ------------------------------------------------
 
-def pol_strat_home_nav():
+def concertgoer_home_nav():
     st.sidebar.page_link(
-        "pages/00_Pol_Strat_Home.py", label="Political Strategist Home", icon="👤"
+        "pages/00_Concertgoer_Home.py", label="Concertgoer Home", icon="🎟️"
     )
 
 
-def world_bank_viz_nav():
+# ---- Role: venue_manager ----------------------------------------------------
+
+def venue_manager_home_nav():
     st.sidebar.page_link(
-        "pages/01_World_Bank_Viz.py", label="World Bank Visualization", icon="🏦"
+        "pages/10_Venue_Manager_Home.py", label="Venue Manager Home", icon="🏟️"
     )
 
 
-def map_demo_nav():
-    st.sidebar.page_link("pages/02_Map_Demo.py", label="Map Demonstration", icon="🗺️")
+# ---- Role: tour_manager -----------------------------------------------------
 
-
-# ---- Role: usaid_worker -----------------------------------------------------
-
-def usaid_worker_home_nav():
+def tour_manager_home_nav():
     st.sidebar.page_link(
-        "pages/10_USAID_Worker_Home.py", label="USAID Worker Home", icon="🏠"
+        "pages/20_Tour_Manager_Home.py", label="Tour Manager Home", icon="🚌"
     )
 
 
-def ngo_directory_nav():
-    st.sidebar.page_link("pages/14_NGO_Directory.py", label="NGO Directory", icon="📁")
-
-
-def add_ngo_nav():
-    st.sidebar.page_link("pages/15_Add_NGO.py", label="Add New NGO", icon="➕")
-
-
-def prediction_nav():
-    st.sidebar.page_link(
-        "pages/11_Prediction.py", label="Regression Prediction", icon="📈"
-    )
-
-
-def api_test_nav():
-    st.sidebar.page_link("pages/12_API_Test.py", label="Test the API", icon="🛜")
-
-
-def classification_nav():
-    st.sidebar.page_link(
-        "pages/13_Classification.py", label="Classification Demo", icon="🌺"
-    )
-
-
-# ---- Role: administrator ----------------------------------------------------
+# ---- Role: app_admin --------------------------------------------------------
 
 def admin_home_nav():
-    st.sidebar.page_link("pages/20_Admin_Home.py", label="System Admin", icon="🖥️")
+    st.sidebar.page_link("pages/30_Admin_Home.py", label="Admin Home", icon="🖥️")
 
 
-def ml_model_mgmt_nav():
+def api_endpoint_tester_nav():
     st.sidebar.page_link(
-        "pages/21_ML_Model_Mgmt.py", label="ML Model Management", icon="🏢"
+        "pages/31_API_Endpoint_Tester.py", label="API Endpoint Tester", icon="🧪"
     )
 
 
@@ -98,22 +74,18 @@ def SideBarLinks(show_home=False):
 
     if st.session_state["authenticated"]:
 
-        if st.session_state["role"] == "pol_strat_advisor":
-            pol_strat_home_nav()
-            world_bank_viz_nav()
-            map_demo_nav()
+        if st.session_state["role"] == "user":
+            concertgoer_home_nav()
 
-        if st.session_state["role"] == "usaid_worker":
-            usaid_worker_home_nav()
-            ngo_directory_nav()
-            add_ngo_nav()
-            prediction_nav()
-            api_test_nav()
-            classification_nav()
+        if st.session_state["role"] == "venue_manager":
+            venue_manager_home_nav()
 
-        if st.session_state["role"] == "administrator":
+        if st.session_state["role"] == "tour_manager":
+            tour_manager_home_nav()
+
+        if st.session_state["role"] == "app_admin":
             admin_home_nav()
-            ml_model_mgmt_nav()
+            api_endpoint_tester_nav()
 
     # About link appears at the bottom for all roles
     about_page_nav()
