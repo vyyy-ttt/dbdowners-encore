@@ -8,6 +8,7 @@ from backend.simple.simple_routes import simple_routes
 from backend.ngos.ngo_routes import ngos
 from backend.reports.report_routes import reports
 from backend.reviews.review_routes import reviews
+from backend.venues.venue_routes import venues
 
 
 def create_app():
@@ -40,5 +41,7 @@ def create_app():
     app.register_blueprint(simple_routes)
     app.register_blueprint(ngos, url_prefix="/ngo")
     app.register_blueprint(reports, url_prefix="/report")
+    app.register_blueprint(reviews, url_prefix="/review")
+    app.register_blueprint(venues, url_prefix="/venue")
 
     return app
