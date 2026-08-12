@@ -88,15 +88,15 @@ CREATE TABLE IF NOT EXISTS tag
 DROP TABLE IF EXISTS venue;
 CREATE TABLE IF NOT EXISTS venue
 (
-    venue_id      INT          NOT NULL,
-    venue_name    VARCHAR(100) NOT NULL,
+    venue_id      INT AUTO_INCREMENT NOT NULL,
+    venue_name    VARCHAR(100)       NOT NULL,
     street        VARCHAR(100),
     city          VARCHAR(50),
     state         VARCHAR(2),
     zip           VARCHAR(10),
     accessibility VARCHAR(100),
-    capacity      INT          NOT NULL,
-    managed_by_id INT          NOT NULL,
+    capacity      INT                NOT NULL,
+    managed_by_id INT                NOT NULL,
     PRIMARY KEY (venue_id),
     FOREIGN KEY (managed_by_id) REFERENCES venue_manager (vm_id)
 );
