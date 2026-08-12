@@ -12,9 +12,8 @@ from backend.tags.tag_routes import tags
 from backend.reviews.review_routes import reviews
 from backend.venues.venue_routes import venues
 
-from backend.ngos.ngo_routes import ngos
 from backend.maya.maya_routes import maya
-
+from backend.tours.tour_routes import tours
 
 
 def create_app():
@@ -52,8 +51,8 @@ def create_app():
     app.register_blueprint(reviews, url_prefix="/review")
     app.register_blueprint(venues, url_prefix="/venue")
 
-    app.register_blueprint(ngos, url_prefix="/ngo")
     app.register_blueprint(maya, url_prefix="/maya")
+    app.register_blueprint(tours, url_prefix="/tour")
 
 
     return app
