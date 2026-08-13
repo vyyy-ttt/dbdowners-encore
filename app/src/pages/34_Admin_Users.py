@@ -72,7 +72,7 @@ with tab_all:
 
     filtered_users = get_json("/user/users", params=filter_params) or []
 
-    section(f"All users ({len(filtered_users)})")
+    section(f"All Users (?) ({len(filtered_users)})")
     if not filtered_users:
         st.info("No users match this filter.")
     else:
