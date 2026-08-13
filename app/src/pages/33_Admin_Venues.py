@@ -15,7 +15,9 @@ apply_theme()
 
 API = "http://web-api:4000"
 
-COUNTRIES = ["US", "CA"]
+# ISO 3166-1 alpha-3. Two-letter codes would make Canada 'CA', which reads as
+# California next to the state column.
+COUNTRIES = ["USA", "CAN", "GBR", "MEX", "DEU", "AUS"]
 
 TABLE_COLUMNS = [
     "venue_id", "venue_name", "street", "city", "state", "zip", "country",

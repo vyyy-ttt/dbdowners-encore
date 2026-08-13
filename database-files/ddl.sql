@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS venue
     city          VARCHAR(50),
     state         VARCHAR(2),
     zip           VARCHAR(10),
-    country       VARCHAR(2) DEFAULT 'US',
+    country       VARCHAR(3) DEFAULT 'USA',
     accessibility VARCHAR(100),
     capacity      INT                NOT NULL,
     managed_by_id INT                NOT NULL,
@@ -321,11 +321,13 @@ VALUES (1, 'Sound Quality'),
       (4, 'Sightlines');
 
 
-INSERT INTO venue (venue_id, venue_name, street, city, state, zip, accessibility, capacity, managed_by_id)
-VALUES (1, 'Fenway Park', '4 Jersey St', 'Boston', 'MA', '02215', 'Wheelchair accessible', 37755, 1),
-      (2, 'TD Garden', '100 Legends Way', 'Boston', 'MA', '02114', 'Wheelchair accessible', 19600, 2),
-      (3, 'Rogers Arena', '800 Griffiths Way', 'Vancouver', 'BC', 'V6B6G1', 'Wheelchair accessible', 18910, 3),
-      (4, 'Kia Forum', '3900 W Manchester Blvd', 'Inglewood', 'CA', '90305', 'Wheelchair accessible', 17505, 4);
+-- country uses ISO 3166-1 alpha-3 codes. Two-letter codes would make Canada
+-- 'CA', which is indistinguishable from California in the state column.
+INSERT INTO venue (venue_id, venue_name, street, city, state, zip, country, accessibility, capacity, managed_by_id)
+VALUES (1, 'Fenway Park', '4 Jersey St', 'Boston', 'MA', '02215', 'USA', 'Wheelchair accessible', 37755, 1),
+      (2, 'TD Garden', '100 Legends Way', 'Boston', 'MA', '02114', 'USA', 'Wheelchair accessible', 19600, 2),
+      (3, 'Rogers Arena', '800 Griffiths Way', 'Vancouver', 'BC', 'V6B6G1', 'CAN', 'Wheelchair accessible', 18910, 3),
+      (4, 'Kia Forum', '3900 W Manchester Blvd', 'Inglewood', 'CA', '90305', 'USA', 'Wheelchair accessible', 17505, 4);
 
 
 INSERT INTO section (section_id, section_name, venue_id)
