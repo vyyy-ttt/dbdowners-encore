@@ -264,9 +264,9 @@ def get_user_reviews(user_id):
 
 
 # ------------------------------------------------------------
-# 1.1  Creating a review is handled by POST /review/reviews in the reviews
+# 1.1  Writing a review is handled by POST /review/reviews in the reviews
 # blueprint, which takes the same body and applies the same "exactly one
-# subject" rule. A create route here as well would give this blueprint two POST
+# subject" rule. A second create route here would give this blueprint two POST
 # routes, and a blueprint may only have one of each verb.
 # ------------------------------------------------------------
 
