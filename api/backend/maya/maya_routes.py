@@ -63,6 +63,29 @@ def rows_as_json(rows):
 
 
 # ------------------------------------------------------------
+# 1.3 (helper)  All users, so the UI can show real names in the
+# "follow someone new" picker instead of asking for a raw user ID.
+# GET /maya/users
+# ------------------------------------------------------------
+@maya.route("/users", methods=["GET"])
+def get_all_users():
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        current_app.logger.info("GET /maya/users")
+        cursor.execute(
+            """SELECT user_id, username, first_name, last_name
+               FROM user
+               ORDER BY first_name, last_name"""
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"DB error in get_all_users: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
+# ------------------------------------------------------------
 # 1.5  Search shows (optionally by city / on-or-after a date).
 # GET /maya/shows?city=Boston&from_date=2026-08-09
 # ------------------------------------------------------------
