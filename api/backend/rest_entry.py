@@ -4,7 +4,6 @@ import os
 import logging
 
 from backend.db_connection import init_app as init_db
-from backend.simple.simple_routes import simple_routes
 
 from backend.reports.report_routes import reports
 from backend.transportations.transport_routes import transportations
@@ -45,8 +44,6 @@ def create_app():
     # Register the routes from each Blueprint with the app object
     # and give a url prefix to each.
     app.logger.info("create_app(): registering blueprints")
-    app.register_blueprint(simple_routes)
-
     app.register_blueprint(reports, url_prefix="/report")
     app.register_blueprint(transportations, url_prefix="/transport")
     app.register_blueprint(tags, url_prefix="/tag")

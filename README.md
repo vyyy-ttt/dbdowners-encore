@@ -1,70 +1,140 @@
-# Summer B 2026 CS 3200 Project Template
+# Encore
 
-This is a template repo for Dr. Fontenot's Summer B 2026 CS 3200 Course Project.
+**Rate every layer of a live show: the artist, the openers, and the venue itself.**
 
-It includes most of the infrastructure setup (containers), sample databases, and example UI pages. Explore it fully and ask questions!
+When you buy anything online you check the reviews first, but when you buy a
+concert ticket you are flying blind. A great artist can be let down by a bad
+room, and an opener you have never heard of can be the best part of the night.
+Most platforms collapse the whole evening into a single star rating, or treat a
+venue like any other business listing.
 
-## Prerequisites
+Encore keeps those things separate. Concertgoers review the **show**, the
+**venue**, and the **artist** independently, tag what actually went wrong or
+right, and build up a history of everything they have been to. That same
+structured feedback is what venue staff and tour managers need and currently
+cannot get: which gate is backing up, whether the sound is the room or the mix,
+and which cities are worth returning to.
 
-See [docs/PreReq.md](docs/PreReq.md) for full setup instructions, including Python environment setup with Anaconda/Miniconda or the standard Python virtual environment tool, required tools, and IDE configuration.
+CS 3200, Summer B 2026 — Database Design Project, Phase 3.
 
-A full index of the project documentation is in [docs/README.md](docs/README.md).
+## Team
 
-## Structure of the Repo
+| Name | Email |
+| --- | --- |
+| Vy Truong | truong.vy@northeastern.edu |
+| Sargun Kaur | kaur.sar@northeastern.edu |
+| Nilesh Thakur | thakur.nil@northeastern.edu |
 
-- This repository is organized into six main directories:
-  - `./app` - the Streamlit app
-  - `./api` - the Flask REST API
-  - `./database-files` - SQL scripts to initialize the MySQL database
-  - `./datasets` - folder for storing datasets
-  - `./ml-src` - folder for ML model development (Jupyter notebooks, training scripts)
-  - `./docs` - project documentation
+## Demo video
 
-- The repo also contains a `docker-compose.yaml` file that is used to set up the Docker containers for the front end app, the REST API, and MySQL database.
+**TODO: paste the public link here before submitting.** It must be viewable by
+anyone with the link — if a grader has to request access, the demo scores zero.
 
-## Suggestion for Learning the Project Code Base
+## User personas
 
-If you are not familiar with web app development, this code base might be confusing. But don't worry, we'll get through it together. Here are some suggestions for learning the code base:
+| Persona | Who they are | What the app gives them |
+| --- | --- | --- |
+| **Maya** | Casual concertgoer | Logs shows she attends, reviews the artist, venue and night, follows friends |
+| **Teddy** | Venue manager at Fenway Park | Structured feedback about his room, broken down by category |
+| **Enrica** | Tour manager | Fan sentiment stop by stop, and a way to respond on behalf of the artist |
+| **Andy** | App administrator | Reports queue, venue and artist listings, user moderation |
 
-1. Start by exploring the `./app` directory. This is where the Streamlit app is located. The Streamlit app is a Python-based web app that is used to interact with the user. It's a great way to build a simple web app without having to learn a lot of web development.
-1. Next, explore the `./api` directory. This is where the Flask REST API is located. The REST API is used to interact with the database and perform other server-side tasks. You might also consider this the "application logic" or "business logic" layer of your app.
-1. Finally, explore the `./database-files` directory. This is where the SQL scripts are located that will be used to initialize the MySQL database.
-1. Bonus: If you want a totally separate copy of the template repo on your laptop to explore and experiment with without affecting your team repo, see the *Setting Up a Personal Sandbox Repo* section in [docs/RepoSetup.md](docs/RepoSetup.md).
+## Running the project
 
-## Setting Up the Repos
+### Prerequisites
 
-See [docs/RepoSetup.md](docs/RepoSetup.md) for full instructions on forking and configuring the team repo, setting up the `.env` file, and running the Docker containers. An optional section there also covers setting up a personal sandbox repo for individual experimentation.
+[Docker Desktop](https://www.docker.com/products/docker-desktop/). Everything
+else runs inside containers. See [docs/PreReq.md](docs/PreReq.md) if you also
+want a local Python environment for editor support.
 
-## Important Tips
+### 1. Create the environment file
 
-See [docs/ImportantTips.md](docs/ImportantTips.md) for tips on hot reloading, recovering from container crashes, and working with the MySQL container — including why you need the `-v` flag to pick up changes to your SQL files.
+The API reads its database credentials from `api/.env`, which is **not** in the
+repo. Copy the template and fill in the two placeholder values:
 
-## Handling User Role Access and Control
+```bash
+cp api/.env.template api/.env
+```
 
-This project uses a simple Role-based Access Control (RBAC) system implemented in Streamlit. The template ships with example roles (*Political Strategist*, *USAID Worker*, *System Administrator*) to illustrate the pattern — **your team will replace these with the personas specific to your project**. You will define four personas and implement three of them.
+```
+SECRET_KEY=<change-this-to-a-random-secret>
+DB_USER=root
+DB_HOST=db
+DB_PORT=3306
+DB_NAME=encore
+MYSQL_ROOT_PASSWORD=<change-this-to-a-strong-password>
+```
 
-See [docs/RBAC.md](docs/RBAC.md) for a full explanation of how the RBAC system works and step-by-step instructions for adapting it to your own roles.
+`MYSQL_ROOT_PASSWORD` is used both to create the database container and to
+connect to it, so the same value has to appear only once here.
 
-## Changing How the App Looks
+### 2. Start everything
 
-The app's colors, fonts, and sidebar styling all come from `app/src/.streamlit/config.toml` — there is no CSS to edit. Save the file and the running app picks the change up; refresh the browser tab if you don't see it.
+```bash
+docker compose up -d
+```
 
-See [docs/Theming.md](docs/Theming.md) for what each setting does and how to build your own palette.
+| Service | Container | URL |
+| --- | --- | --- |
+| Streamlit app | `web-app` | http://localhost:8501 |
+| Flask REST API | `web-api` | http://localhost:4000 |
+| MySQL | `mysql_db` | `localhost:3200` |
 
-## (Completely Optional) Incorporating ML Models into your Project
+Open **http://localhost:8501** and pick a persona. There is no login; each
+button just switches which view of the app you see.
 
-**This is entirely optional. No part of the project requires a machine learning model, and you are not expected to build one.** The template simply happens to include the plumbing for a hypothetical model, described below, in case your team is curious and has spare time. Skipping this section costs you nothing.
+### 3. Resetting the database
 
-The model shipped in `api/backend/ml_models/model01.py` is a *fake* placeholder — it reads coefficients out of the `model1_params` table and computes a dot product. It is there to show the wiring, not to make real predictions.
+Every `.sql` file in `database-files/` runs **only when the database container
+is first created**, in alphabetical order. Restarting an existing container will
+not re-run them. To pick up schema or data changes:
 
-If you do want to explore it:
+```bash
+docker compose down -v && docker compose up -d
+```
 
-1. Collect and preprocess necessary datasets for your models.
-1. Build, train, and test your model in a Jupyter Notebook.
-   - You can store your datasets in the `datasets` folder and your notebook in the `ml-src` folder.
-1. Once your team is happy with the model's performance, convert your notebook code to a pure Python script.
-   - You can include the `training` and `testing` functionality as well as the `prediction` functionality.
-   - Develop and test this pure Python script first in the `ml-src` folder.
-1. Review the `api/backend/ml_models` module. **Important**: you would never want to hard code the model parameter weights directly in the prediction function — store them in the database, as `model01.py` does.
-1. The prediction route for the REST API is in `api/backend/simple/simple_routes.py`. It accepts two URL parameters and passes them to the `predict` function in the `ml_models` module, then packages the result back to Streamlit as JSON.
-1. Back in Streamlit, check out `app/src/pages/11_Prediction.py`. Two numeric input fields are created; when the button is pressed, it makes a request to the REST API at `/prediction/{var_01}/{var_02}` and displays the results.
+The `-v` is the important part — it deletes the volume holding the old data.
+
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `app/` | Streamlit front end |
+| `api/` | Flask REST API, one blueprint per resource |
+| `database-files/` | `ddl.sql` (schema + seed rows), `zz_mock_data.sql` (sample data) |
+| `docs/` | Project documentation |
+
+## The REST API
+
+Routes are split into one Flask blueprint per resource, under `api/backend/`.
+
+| Blueprint | Prefix | Routes |
+| --- | --- | --- |
+| `followers` | `/follower` | 5 |
+| `maya` | `/maya` | 9 |
+| `reports` | `/report` | 5 |
+| `reviews` | `/review` | 6 |
+| `tags` | `/tag` | 5 |
+| `tours` | `/tour` | 7 |
+| `transportations` | `/transport` | 6 |
+| `users` | `/user` | 5 |
+| `venue_managers` | `/venue_manager` | 6 |
+| `venues` | `/venue` | 10 |
+
+Signed in as the administrator, the **API Endpoint Tester** page calls the
+transportation and tag routes directly and shows the raw request, status code
+and response body, which is a quick way to check the API is healthy.
+
+## Sample data
+
+`database-files/zz_mock_data.sql` is generated with the Python
+[Faker](https://faker.readthedocs.io/) library from a fixed random seed, so
+regenerating produces identical rows. Row counts follow the Phase 3 guidance:
+
+- **40 rows** per strong entity (`user`, `artist`, `venue`, `tour`, `tag`, …)
+- **75 rows** per weak entity (`show`, `review`, `report`, `transportation`, …)
+- **150 rows** per bridge table (`follows`, `review_tag`, `user_show`, …)
+
+`ddl.sql` seeds rows 1–4 of every table by hand so the personas have known
+identities, which is why the generated file starts its ids at 5 and sorts after
+`ddl.sql` alphabetically.
