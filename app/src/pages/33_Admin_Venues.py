@@ -132,7 +132,7 @@ with tab_edit:
             country = st.selectbox(
                 "Country",
                 options=COUNTRIES,
-                index=COUNTRIES.index(current.get("country", "US"))
+                index=COUNTRIES.index(current["country"])
                 if current.get("country") in COUNTRIES else 0,
             )
             accessibility = st.text_input(
