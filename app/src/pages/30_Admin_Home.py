@@ -97,7 +97,7 @@ section("Moderation & Management")
 c1, c2, c3 = st.columns(3)
 with c1:
     st.markdown("**Manage Reports**")
-    st.caption("Review flagged users and remove reviews that break the rules.")
+    st.caption("Review flagged users and reviews that break the rules.")
     if st.button("Go to Reports →", type="primary", use_container_width=True):
         st.switch_page("pages/32_Admin_Reports.py")
 with c2:
