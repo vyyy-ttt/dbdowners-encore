@@ -148,10 +148,7 @@ def admin_users_nav():
     )
 
 
-def api_endpoint_tester_nav():
-    st.sidebar.page_link(
-        "pages/31_API_Endpoint_Tester.py", label="API Endpoint Tester", icon="🧪"
-    )
+
 
 
 # ---- Sidebar assembly -------------------------------------------------------
@@ -198,7 +195,6 @@ def SideBarLinks(show_home=False):
             admin_reports_nav()
             admin_venues_nav()
             admin_users_nav()
-            api_endpoint_tester_nav()
 
     # There are no real accounts. This just clears the chosen persona and
     # returns to the picker on Home.py.
