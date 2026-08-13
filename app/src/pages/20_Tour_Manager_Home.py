@@ -142,17 +142,28 @@ with left:
     section("Ratings by category")
 
     all_tags = get_json("/tag/tags") or []
-    if not all_tags:
-        st.info("No tag categories are defined yet.")
-    else:
-        for tag in all_tags:
-            row = by_tag.get(tag["tag_name"])
-            meter(tag["tag_name"], as_float(row["avg_rating"]) if row else None)
 
-    st.caption(
-        "Counts reviews about the venue itself as well as reviews about shows "
-        "held there. A dash means no feedback in that category yet."
+    # Only categories with feedback for this venue. Listing all of them would
+    # be a wall of empty rows, since the tag table covers far more categories
+    # than any single venue has reviews for.
+    scored_tags = sorted(
+        (r for r in tag_rows if as_float(r["avg_rating"]) is not None),
+        key=lambda r: as_float(r["avg_rating"]),
+        reverse=True,
     )
+
+    if not scored_tags:
+        st.info("No tagged feedback for this venue yet. Try another venue.")
+    else:
+        for row in scored_tags:
+            meter(row["tag_name"], as_float(row["avg_rating"]))
+
+        silent = len(all_tags) - len(scored_tags)
+        st.caption(
+            f"Counts reviews about the venue itself as well as reviews about "
+            f"shows held there. {silent} other categories have no feedback for "
+            f"this venue yet."
+        )
 
 with right:
     section(f"Fan sentiment for venues sized {band}")

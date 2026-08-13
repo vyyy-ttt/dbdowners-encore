@@ -98,22 +98,58 @@ def _create_tag(tag_id, data):
         cursor.close()
 
 
-# Create a new tag with the given <tag_id>
+# Create a new tag. Pass tag_id to choose it explicitly, as the resources table
+# describes, or leave it out and the API assigns the next one, which is what a
+# form in the app needs since it has no way to invent an unused id.
 # Required fields: tag_name
-# Example: POST /tag/tags/5 with {"tag_name": "Parking"}
-@tags.route("/tags/<int:tag_id>", methods=["POST"])
-def create_tag_with_id(tag_id):
-    return _create_tag(tag_id, request.get_json(silent=True))
-
-
-# Create a new tag and let the API assign the next tag_id. Not in the resources
-# table, but without it a caller has to invent an unused id before it can add a
-# tag, which a form in the app has no good way to do.
 # Example: POST /tag/tags with {"tag_name": "Parking"}
 @tags.route("/tags", methods=["POST"])
 def create_tag():
     data = request.get_json(silent=True) or {}
     return _create_tag(data.get("tag_id"), data)
+
+
+# Rename a tag. Renaming rather than deleting is how a duplicate category gets
+# cleaned up, since a tag in use cannot be deleted.
+# Required fields: tag_name
+# Example: PUT /tag/tags/5 with {"tag_name": "Parking & Transit"}
+@tags.route("/tags/<int:tag_id>", methods=["PUT"])
+def update_tag(tag_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        data = request.get_json(silent=True) or {}
+
+        if "tag_name" not in data:
+            return jsonify({"error": "Missing required field: tag_name"}), 400
+
+        if not _tag_exists(cursor, tag_id):
+            return jsonify({"error": "Tag not found"}), 404
+
+        # Same reasoning as create: duplicate names would split the counts in
+        # every per-category breakdown built on top of these.
+        cursor.execute(
+            "SELECT tag_id FROM tag WHERE tag_name = %s AND tag_id <> %s",
+            (data["tag_name"], tag_id),
+        )
+        clash = cursor.fetchone()
+        if clash:
+            return jsonify({
+                "error": f"A different tag named '{data['tag_name']}' already exists",
+                "tag_id": clash["tag_id"],
+            }), 409
+
+        cursor.execute(
+            "UPDATE tag SET tag_name = %s WHERE tag_id = %s", (data["tag_name"], tag_id)
+        )
+        get_db().commit()
+
+        current_app.logger.info(f'Renamed tag {tag_id}')
+        return jsonify({"message": "Tag updated successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in update_tag: {e}')
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
 
 
 # Delete a tag

@@ -60,10 +60,6 @@ def home_nav():
     st.sidebar.page_link("Home.py", label="Home", icon="🏠")
 
 
-def about_page_nav():
-    st.sidebar.page_link("pages/40_About.py", label="About", icon="🧠")
-
-
 # ---- Role: user (concertgoer) -----------------------------------------------
 
 def concertgoer_home_nav():
@@ -109,6 +105,12 @@ def tour_manager_home_nav():
 def tour_reviews_nav():
     st.sidebar.page_link(
         "pages/21_Tour_Reviews.py", label="Tour Reviews", icon="💬"
+    )
+
+
+def tour_performance_nav():
+    st.sidebar.page_link(
+        "pages/22_Tour_Performance.py", label="Tour Performance", icon="📈"
     )
 
 
@@ -161,13 +163,11 @@ def SideBarLinks(show_home=False):
         if st.session_state["role"] == "tour_manager":
             tour_manager_home_nav()
             tour_reviews_nav()
+            tour_performance_nav()
 
         if st.session_state["role"] == "app_admin":
             admin_home_nav()
             api_endpoint_tester_nav()
-
-    # About link appears at the bottom for all roles
-    about_page_nav()
 
     # There are no real accounts. This just clears the chosen persona and
     # returns to the picker on Home.py.

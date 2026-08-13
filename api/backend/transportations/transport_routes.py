@@ -230,18 +230,6 @@ def _update_transportation(transport_id, data):
         cursor.close()
 
 
-# Update a transportation method, with transport_id supplied in the JSON body
-# Example: PUT /transport/transportations with {"transport_id": 1, "estimated_cost": 4.25}
-@transportations.route("/transportations", methods=["PUT"])
-def update_transportation_from_body():
-    data = request.get_json()
-
-    if "transport_id" not in data:
-        return jsonify({"error": "Missing required field: transport_id"}), 400
-
-    return _update_transportation(data["transport_id"], data)
-
-
 # Update the transportation method associated with <transport_id>
 # Can update any field except transport_id
 # Example: PUT /transport/transportations/1 with JSON body containing fields to update
@@ -268,25 +256,6 @@ def _delete_transportation(transport_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
-
-
-# Delete a transportation method, with transport_id supplied in the JSON body
-# or as a query parameter
-# Example: DELETE /transport/transportations?transport_id=1
-@transportations.route("/transportations", methods=["DELETE"])
-def delete_transportation_from_body():
-    transport_id = request.args.get("transport_id")
-
-    if transport_id is None:
-        # silent=True so a DELETE sent with no body at all returns our 400
-        # rather than raising a 415/400 out of Flask's JSON parsing
-        data = request.get_json(silent=True) or {}
-        transport_id = data.get("transport_id")
-
-    if transport_id is None:
-        return jsonify({"error": "Missing required field: transport_id"}), 400
-
-    return _delete_transportation(transport_id)
 
 
 # Delete the transportation method associated with <transport_id>
