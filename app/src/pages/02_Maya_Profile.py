@@ -72,16 +72,16 @@ st.write("")
 
 # ---------------------------------------------------------------
 # Following management  ->  followers blueprint  (User Story 1.3)
-#   GET    /followers/following/<id>
-#   POST   /followers/follow/<a>/<b>
-#   DELETE /followers/follow/<a>/<b>
+#   GET    /follower/following/<id>
+#   POST   /follower/follow/<a>/<b>
+#   DELETE /follower/follow/<a>/<b>
 # ---------------------------------------------------------------
 section("Friends I follow")
 
 col_left, col_right = st.columns([2, 1], gap="large")
 
 with col_left:
-    following = get_json(f"/followers/following/{USER_ID}") or []
+    following = get_json(f"/follower/following/{USER_ID}") or []
 
     if not following:
         st.info("You're not following anyone yet.")
@@ -94,7 +94,7 @@ with col_left:
                       use_container_width=True):
             try:
                 r = requests.delete(
-                    f"{API}/followers/follow/{USER_ID}/{f['user_id']}", timeout=10)
+                    f"{API}/follower/follow/{USER_ID}/{f['user_id']}", timeout=10)
                 if r.status_code == 200:
                     st.success(f"Unfollowed @{f['username']}")
                     st.rerun()
@@ -112,7 +112,7 @@ with col_right:
                                      use_container_width=True):
                 try:
                     r = requests.post(
-                        f"{API}/followers/follow/{USER_ID}/{int(followee_id)}",
+                        f"{API}/follower/follow/{USER_ID}/{int(followee_id)}",
                         timeout=10,
                     )
                     if r.status_code == 201:

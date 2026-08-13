@@ -15,11 +15,51 @@
 # Registered in rest_entry.py with url_prefix="/maya".
 ########################################################
 
+import datetime
+from decimal import Decimal
+
 from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
 maya = Blueprint("maya", __name__)
+
+
+# MySQL TIME columns come back as datetime.timedelta, which Flask cannot
+# serialize at all, so selecting show.start_time raises TypeError and the route
+# 500s. DATE renders as an HTTP date and DECIMAL as a string, neither of which
+# is much use to the UI either. Run rows through this before jsonify.
+
+def _time_to_str(delta):
+    total_seconds = int(delta.total_seconds())
+    sign = "-" if total_seconds < 0 else ""
+    total_seconds = abs(total_seconds)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+def as_json(row):
+    if row is None:
+        return None
+
+    cleaned = {}
+    for key, value in row.items():
+        if isinstance(value, Decimal):
+            cleaned[key] = float(value)
+        elif isinstance(value, datetime.timedelta):
+            cleaned[key] = _time_to_str(value)
+        elif isinstance(value, datetime.datetime):
+            cleaned[key] = value.isoformat(sep=" ")
+        elif isinstance(value, datetime.date):
+            cleaned[key] = value.isoformat()
+        else:
+            cleaned[key] = value
+    return cleaned
+
+
+def rows_as_json(rows):
+    return [as_json(row) for row in rows]
 
 
 # ------------------------------------------------------------
@@ -65,7 +105,7 @@ def search_shows():
         query += " ORDER BY s.show_date ASC, s.start_time ASC"
 
         cursor.execute(query, params)
-        shows = cursor.fetchall()
+        shows = rows_as_json(cursor.fetchall())
 
         current_app.logger.info(f"Retrieved {len(shows)} shows")
         return jsonify(shows), 200

@@ -73,10 +73,12 @@ with middle:
                  type='primary',
                  use_container_width=True):
         st.session_state['authenticated'] = True
-        st.session_state['role'] = 'user'
+        st.session_state['role'] = 'casual_concertgoer'
         st.session_state['first_name'] = 'Maya'
+        # Maya is user_id 1 in the seed data; her pages read this to call the API
+        st.session_state['user_id'] = 1
         logger.info("Switching to the Concertgoer persona")
-        st.switch_page('pages/00_Concertgoer_Home.py')
+        st.switch_page('pages/00_Maya_Home.py')
     st.caption("Logs the shows she attends and reviews the artist, venue, and night.")
 
     if st.button("Teddy, Venue Manager at Fenway Park",
@@ -85,6 +87,9 @@ with middle:
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'venue_manager'
         st.session_state['first_name'] = 'Teddy'
+        # Teddy is venue_manager vm_id 1 in the seed data; his pages read this
+        # to load the venues he manages.
+        st.session_state['vm_id'] = 1
         logger.info("Switching to the Venue Manager persona")
         st.switch_page('pages/10_Venue_Manager_Home.py')
     st.caption("Reads structured feedback about his venue and replies to it.")
