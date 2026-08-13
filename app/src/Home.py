@@ -73,10 +73,13 @@ with middle:
                  type='primary',
                  use_container_width=True):
         st.session_state['authenticated'] = True
-        st.session_state['role'] = 'user'
+        st.session_state['role'] = 'casual_concertgoer'
         st.session_state['first_name'] = 'Maya'
-        logger.info("Switching to the Concertgoer persona")
-        st.switch_page('pages/00_Concertgoer_Home.py')
+        # Maya is user_id 1 in the seed data; her pages fetch her stats,
+        # reviews, and follows using this id.
+        st.session_state['user_id'] = 1
+        logger.info("Switching to the Maya persona")
+        st.switch_page('pages/00_Maya_Home.py')
     st.caption("Logs the shows she attends and reviews the artist, venue, and night.")
 
     if st.button("Teddy, Venue Manager at Fenway Park",
