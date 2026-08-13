@@ -17,7 +17,7 @@ and which cities are worth returning to.
 
 CS 3200, Summer B 2026 — Database Design Project, Phase 3.
 
-## Team
+## Team DBDowners
 
 | Name | Email |
 | --- | --- |
@@ -48,9 +48,6 @@ Each persona has a landing page plus three feature pages:
 | **Enrica** | Tour Insights · Tour Reviews · Tour Performance | 3.1, 3.2, 3.3, 3.4, 3.5, 3.6 |
 | **Andy** | Manage Reports · Manage Venues · Manage Users | 4.1, 4.2, 4.3, 4.4, 4.5, 4.6 |
 
-Andy also has an **API Endpoint Tester** page, which calls the transportation
-and tag routes directly and shows the raw request, status code and response
-body. It is a quick way to confirm the API is healthy.
 
 ## Running the project
 
