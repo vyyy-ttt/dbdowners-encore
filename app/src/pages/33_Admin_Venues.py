@@ -67,7 +67,7 @@ all_venues = get_json("/venue/venues") or []
 managers = get_json("/venue_manager/venue_managers") or []
 manager_names = {m["vm_id"]: f"{m['first_name']} {m['last_name']}" for m in managers}
 
-tab_all, tab_edit, tab_add = st.tabs(["All venues", "Edit existing venue", "Add new venue"])
+tab_all, tab_edit, tab_add = st.tabs(["All Venues", "Edit Existing Venue", "Add New Venue"])
 
 # All venues table, with filters
 
@@ -93,7 +93,7 @@ with tab_all:
 
     filtered_venues = get_json("/venue/venues", params=filter_params) or []
 
-    section(f"All venues ({len(filtered_venues)})")
+    section(f"All Venues ({len(filtered_venues)})")
     if not filtered_venues:
         st.info("No venues match this filter.")
     else:
@@ -166,7 +166,7 @@ with tab_edit:
                     st.success(f"{name} updated.")
                     st.rerun()
 
-# ---- Add new venue ------------------------------------------------------------
+# Add new venue
 
 with tab_add:
     section("New venue")

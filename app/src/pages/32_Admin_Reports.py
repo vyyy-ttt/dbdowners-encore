@@ -8,7 +8,7 @@ import streamlit as st
 from modules.nav import SideBarLinks
 from modules.theme import apply_theme, page_header, section
 
-st.set_page_config(layout='wide', page_title="Encore | Reports")
+st.set_page_config(layout='wide', page_title="Encore | Manage Reports")
 
 SideBarLinks()
 apply_theme()
@@ -60,9 +60,9 @@ def delete_json(path):
     return True
 
 
-page_header("Reports", "All reports filed on the platform.")
+page_header("Manage Reports", "All reports filed on the platform.")
 
-# ---- Filter bar --------------------------------------------------------------
+# Filters bar
 
 f1, f2 = st.columns(2)
 with f1:
@@ -78,7 +78,7 @@ if type_choice != "All":
 
 reports = get_json("/report/reports", params=params) or []
 
-# ---- Full table ---------------------------------------------------------
+# Full reports table
 
 section(f"All Reports ({len(reports)})")
 
