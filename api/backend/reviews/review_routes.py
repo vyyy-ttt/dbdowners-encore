@@ -199,9 +199,9 @@ def get_review_stats():
         current_app.logger.info('GET /review/reviews/stats')
  
         query = """
-            SELECT DATE_FORMAT(upload_date, '%%Y-%%m') AS month, COUNT(review_id) AS review_count
+            SELECT DATE_FORMAT(upload_date, '%Y-%m') AS month, COUNT(review_id) AS review_count
             FROM review
-            GROUP BY DATE_FORMAT(upload_date, '%%Y-%%m')
+            GROUP BY DATE_FORMAT(upload_date, '%Y-%m')
             ORDER BY month ASC
         """
         cursor.execute(query)

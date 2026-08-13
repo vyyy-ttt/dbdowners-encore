@@ -6,7 +6,7 @@ from mysql.connector import Error
 venues = Blueprint("venues", __name__)
 
 
-# Get all venues with optional filtering by city and capacity
+# Get all venues with optional filtering by city, country, and capacity
 # Example: /venue/venues?city=Boston
 @venues.route("/venues", methods=["GET"])
 def get_all_venues():
@@ -15,14 +15,24 @@ def get_all_venues():
         current_app.logger.info('GET /venue/venues')
 
         city = request.args.get("city")
+        country = request.args.get("country")
         capacity = request.args.get("capacity")
  
-        query = "SELECT * FROM venue WHERE 1=1"
+        query = """
+            SELECT v.*,
+                   CONCAT(vm.first_name, ' ', vm.last_name) AS manager_name
+            FROM venue v
+            LEFT JOIN venue_manager vm ON v.managed_by_id = vm.vm_id
+            WHERE 1=1
+        """
         params = []
  
         if city:
             query += " AND city = %s"
             params.append(city)
+        if country:
+            query += "AND country = %s"
+            params.append(country)
         if capacity:
             query += " AND capacity <= %s"
             params.append(capacity)
@@ -73,9 +83,9 @@ def create_venue():
                 return jsonify({"error": f"Missing required field: {field}"}), 400
  
         query = """
-            INSERT INTO venue (venue_name, street, city, state, zip,
+            INSERT INTO venue (venue_name, street, city, state, zip, country, 
                                 accessibility, capacity, managed_by_id)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
             data["venue_name"],
@@ -83,6 +93,7 @@ def create_venue():
             data.get("city"),
             data.get("state"),
             data.get("zip"),
+            data.get("country", "US"),
             data.get("accessibility"),
             data["capacity"],
             data["managed_by_id"],
@@ -110,7 +121,7 @@ def update_venue(venue_id):
             return jsonify({"error": "Venue not found"}), 404
  
         allowed_fields = [
-            "venue_name", "street", "city", "state", "zip",
+            "venue_name", "street", "city", "state", "zip", "country",
             "accessibility", "capacity", "managed_by_id",
         ]
         update_fields = [f"{f} = %s" for f in allowed_fields if f in data]

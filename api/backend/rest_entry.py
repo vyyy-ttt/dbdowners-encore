@@ -56,6 +56,6 @@ def create_app():
     app.register_blueprint(tours, url_prefix="/tour")
     app.register_blueprint(followers, url_prefix="/follower")
     app.register_blueprint(users, url_prefix="/user")
-    app.register_blueprint(venue_managers, url_prefix="/vm")
+    app.register_blueprint(venue_managers, url_prefix="/venue_manager")
 
     return app

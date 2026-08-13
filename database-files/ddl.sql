@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS encore;
 CREATE DATABASE IF NOT EXISTS encore;
 USE encore;
 
+
 DROP TABLE IF EXISTS app_admin;
 CREATE TABLE IF NOT EXISTS app_admin
 (
@@ -43,6 +44,7 @@ CREATE TABLE IF NOT EXISTS follows
    FOREIGN KEY (followee_id) REFERENCES user (user_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
 DROP TABLE IF EXISTS artist;
 CREATE TABLE IF NOT EXISTS artist
 (
@@ -74,6 +76,7 @@ CREATE TABLE IF NOT EXISTS tour_manager
    PRIMARY KEY (tm_id)
 );
 
+
 DROP TABLE IF EXISTS tag;
 CREATE TABLE IF NOT EXISTS tag
 (
@@ -81,22 +84,24 @@ CREATE TABLE IF NOT EXISTS tag
    tag_name VARCHAR(50) NOT NULL,
    PRIMARY KEY (tag_id)
 );
+
+
 DROP TABLE IF EXISTS venue;
 CREATE TABLE IF NOT EXISTS venue
 (
-   venue_id      INT          NOT NULL,
-   venue_name    VARCHAR(100) NOT NULL,
-   street        VARCHAR(100),
-   city          VARCHAR(50),
-   state         VARCHAR(2),
-   zip           VARCHAR(10),
-   accessibility VARCHAR(100),
-   capacity      INT          NOT NULL,
-   managed_by_id INT          NOT NULL,
-   PRIMARY KEY (venue_id),
-   FOREIGN KEY (managed_by_id) REFERENCES venue_manager (vm_id)
+    venue_id      INT AUTO_INCREMENT NOT NULL,
+    venue_name    VARCHAR(100)       NOT NULL,
+    street        VARCHAR(100),
+    city          VARCHAR(50),
+    state         VARCHAR(2),
+    zip           VARCHAR(10),
+    country       VARCHAR(2) DEFAULT 'US',
+    accessibility VARCHAR(100),
+    capacity      INT                NOT NULL,
+    managed_by_id INT                NOT NULL,
+    PRIMARY KEY (venue_id),
+    FOREIGN KEY (managed_by_id) REFERENCES venue_manager (vm_id)
 );
-
 
 
 DROP TABLE IF EXISTS section;

@@ -5,6 +5,11 @@ from mysql.connector import Error
 # Create a Blueprint for report routes
 reports = Blueprint("reports", __name__)
 
+# Parse bool values to prevent casting, specifically for the is_resolved field of reports
+def parse_bool(value):
+    if value is None:
+        return None
+    return 1 if value.lower() in ("1", "true", "yes") else 0
 
 # Get all Reports with optional filtering by report type and resolved status
 # Example: /report/reports?report_type=review&is_resolved=false
@@ -20,15 +25,27 @@ def get_all_reports():
         is_resolved = request.args.get("is_resolved")
 
         # WHERE 1=1 lets us append AND clauses cleanly without special-casing the first filter
-        query = "SELECT * FROM report WHERE 1=1"
+        query = """
+            SELECT r.*,
+                   reporter.username AS reporter_username,
+                   target_user.username AS target_username,
+                   review_author.username AS review_author_username
+            FROM report r
+            LEFT JOIN user reporter ON r.reporter_id = reporter.user_id
+            LEFT JOIN user target_user ON r.target_user_id = target_user.user_id
+            LEFT JOIN review rv ON r.target_review_id = rv.review_id
+            LEFT JOIN user review_author ON rv.author_user_id = review_author.user_id
+            WHERE 1=1
+        """
         params = []
 
+        parsed_resolved = parse_bool(is_resolved)
+        if parsed_resolved is not None:
+            query += " AND r.is_resolved = %s"
+            params.append(parsed_resolved)
         if report_type:
             query += " AND report_type = %s"
             params.append(report_type)
-        if is_resolved:
-            query += " AND is_resolved = %s"
-            params.append(is_resolved)
 
 
         cursor.execute(query, params)
@@ -138,7 +155,7 @@ def get_reported_reviews():
     try:
         current_app.logger.info('GET /report/reports/reviews')
  
-        is_resolved = request.args.get("is_resolved", "false")
+        is_resolved = parse_bool(request.args.get("is_resolved", "false"))
  
         query = """
             SELECT r.report_id, rv.review_id, rv.review_text, rv.rating,

@@ -17,7 +17,13 @@ def get_all_users():
 
         account_status = request.args.get("account_status")
 
-        query = "SELECT * FROM user WHERE 1=1"
+        query = """
+            SELECT u.*,
+                   CONCAT(a.first_name, ' ', a.last_name) AS suspended_by_name
+            FROM user u
+            LEFT JOIN app_admin a ON u.suspended_by_id = a.admin_id
+            WHERE 1=1
+        """
         params = []
 
         if account_status:
