@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS encore;
 CREATE DATABASE IF NOT EXISTS encore;
 USE encore;
 
+
 DROP TABLE IF EXISTS app_admin;
 CREATE TABLE IF NOT EXISTS app_admin
 (
@@ -26,12 +27,10 @@ CREATE TABLE IF NOT EXISTS user
    suspended_by_id INT,
    sus_start_date  DATETIME,
    sus_end_date    DATETIME,
-   user_id         INT                                NOT NULL,
+   user_id         INT AUTO_INCREMENT                 NOT NULL,
    PRIMARY KEY (user_id),
    FOREIGN KEY (suspended_by_id) REFERENCES app_admin (admin_id)
 );
-
-
 
 
 DROP TABLE IF EXISTS follows;
@@ -45,11 +44,12 @@ CREATE TABLE IF NOT EXISTS follows
    FOREIGN KEY (followee_id) REFERENCES user (user_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
 DROP TABLE IF EXISTS artist;
 CREATE TABLE IF NOT EXISTS artist
 (
-   artist_id   INT          NOT NULL,
-   artist_name VARCHAR(100) NOT NULL,
+   artist_id   INT AUTO_INCREMENT NOT NULL,
+   artist_name VARCHAR(100)       NOT NULL,
    genre       VARCHAR(50),
    PRIMARY KEY (artist_id)
 );
@@ -58,10 +58,10 @@ CREATE TABLE IF NOT EXISTS artist
 DROP TABLE IF EXISTS venue_manager;
 CREATE TABLE IF NOT EXISTS venue_manager
 (
-   vm_id         INT         NOT NULL,
+   vm_id         INT AUTO_INCREMENT NOT NULL,
    first_name    VARCHAR(50),
    last_name     VARCHAR(50),
-   email_address VARCHAR(75) NOT NULL,
+   email_address VARCHAR(75)        NOT NULL,
    PRIMARY KEY (vm_id)
 );
 
@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS tour_manager
    PRIMARY KEY (tm_id)
 );
 
+
 DROP TABLE IF EXISTS tag;
 CREATE TABLE IF NOT EXISTS tag
 (
@@ -83,22 +84,24 @@ CREATE TABLE IF NOT EXISTS tag
    tag_name VARCHAR(50) NOT NULL,
    PRIMARY KEY (tag_id)
 );
+
+
 DROP TABLE IF EXISTS venue;
 CREATE TABLE IF NOT EXISTS venue
 (
-   venue_id      INT          NOT NULL,
-   venue_name    VARCHAR(100) NOT NULL,
-   street        VARCHAR(100),
-   city          VARCHAR(50),
-   state         VARCHAR(2),
-   zip           VARCHAR(10),
-   accessibility VARCHAR(100),
-   capacity      INT          NOT NULL,
-   managed_by_id INT          NOT NULL,
-   PRIMARY KEY (venue_id),
-   FOREIGN KEY (managed_by_id) REFERENCES venue_manager (vm_id)
+    venue_id      INT AUTO_INCREMENT NOT NULL,
+    venue_name    VARCHAR(100)       NOT NULL,
+    street        VARCHAR(100),
+    city          VARCHAR(50),
+    state         VARCHAR(2),
+    zip           VARCHAR(10),
+    country       VARCHAR(2) DEFAULT 'US',
+    accessibility VARCHAR(100),
+    capacity      INT                NOT NULL,
+    managed_by_id INT                NOT NULL,
+    PRIMARY KEY (venue_id),
+    FOREIGN KEY (managed_by_id) REFERENCES venue_manager (vm_id)
 );
-
 
 
 DROP TABLE IF EXISTS section;
@@ -157,7 +160,6 @@ CREATE TABLE IF NOT EXISTS `show`
 );
 
 
-
 DROP TABLE IF EXISTS diary_entry;
 CREATE TABLE IF NOT EXISTS diary_entry
 (
@@ -196,10 +198,6 @@ CREATE TABLE IF NOT EXISTS review
 );
 
 
-
-
-
-
 DROP TABLE IF EXISTS review_tag;
 CREATE TABLE IF NOT EXISTS review_tag
 (
@@ -209,10 +207,6 @@ CREATE TABLE IF NOT EXISTS review_tag
    FOREIGN KEY (review_id) REFERENCES review (review_id) ON UPDATE CASCADE ON DELETE RESTRICT,
    FOREIGN KEY (tag_id) REFERENCES tag (tag_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
-
-
-
-
 
 
 DROP TABLE IF EXISTS report;
@@ -232,10 +226,6 @@ CREATE TABLE IF NOT EXISTS report
 );
 
 
-
-
-
-
 DROP TABLE IF EXISTS report_admin;
 CREATE TABLE IF NOT EXISTS report_admin
 (
@@ -245,10 +235,6 @@ CREATE TABLE IF NOT EXISTS report_admin
    FOREIGN KEY (report_id) REFERENCES report (report_id),
    FOREIGN KEY (admin_id) REFERENCES app_admin (admin_id)
 );
-
-
-
-
 
 
 DROP TABLE IF EXISTS admin_venue;
@@ -262,10 +248,6 @@ CREATE TABLE IF NOT EXISTS admin_venue
 );
 
 
-
-
-
-
 DROP TABLE IF EXISTS admin_artist;
 CREATE TABLE IF NOT EXISTS admin_artist
 (
@@ -277,10 +259,6 @@ CREATE TABLE IF NOT EXISTS admin_artist
 );
 
 
-
-
-
-
 DROP TABLE IF EXISTS user_show;
 CREATE TABLE IF NOT EXISTS user_show
 (
@@ -290,8 +268,6 @@ CREATE TABLE IF NOT EXISTS user_show
    FOREIGN KEY (user_id) REFERENCES user (user_id) ON UPDATE CASCADE ON DELETE RESTRICT,
    FOREIGN KEY (show_id) REFERENCES `show` (show_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
-
-
 
 
 INSERT INTO app_admin (admin_id, first_name, last_name, email_address)

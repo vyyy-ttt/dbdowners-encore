@@ -17,7 +17,13 @@ def get_all_users():
 
         account_status = request.args.get("account_status")
 
-        query = "SELECT * FROM user WHERE 1=1"
+        query = """
+            SELECT u.*,
+                   CONCAT(a.first_name, ' ', a.last_name) AS suspended_by_name
+            FROM user u
+            LEFT JOIN app_admin a ON u.suspended_by_id = a.admin_id
+            WHERE 1=1
+        """
         params = []
 
         if account_status:
@@ -60,24 +66,23 @@ def get_user(user_id):
 
 # Create a new user.
 # Example: POST /user/users
-# body: { user_id, first_name, last_name, email_address, username }
+# body: { first_name, last_name, email_address, username }
 @users.route("/users", methods=["POST"])
 def create_user():
     cursor = get_db().cursor(dictionary=True)
     try:
         data = request.get_json() or {}
 
-        required = ["user_id", "email_address", "username"]
+        required = ["email_address", "username"]
         for field in required:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
 
         cursor.execute(
             """INSERT INTO user
-                   (user_id, first_name, last_name, email_address, username)
+                   (first_name, last_name, email_address, username)
                VALUES (%s, %s, %s, %s, %s)""",
             (
-                data["user_id"],
                 data.get("first_name"),
                 data.get("last_name"),
                 data["email_address"],
@@ -86,7 +91,7 @@ def create_user():
         )
         get_db().commit()
         return jsonify({"message": "User created successfully",
-                        "user_id": data["user_id"]}), 201
+                        "user_id": cursor.lastrowid}), 201
     except Error as e:
         current_app.logger.error(f'Database error in create_user: {e}')
         return jsonify({"error": str(e)}), 500
@@ -107,7 +112,7 @@ def update_user(user_id):
             return jsonify({"error": "User not found"}), 404
 
         allowed = ["account_status", "first_name", "last_name",
-                   "email_address", "username", "suspended_by_id"]
+                   "email_address", "username", "suspended_by_id", "sus_start_date", "sus_end_date"]
         update_fields = [f"{f} = %s" for f in allowed if f in data]
         params = [data[f] for f in allowed if f in data]
 

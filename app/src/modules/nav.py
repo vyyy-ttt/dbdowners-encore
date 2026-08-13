@@ -120,6 +120,24 @@ def admin_home_nav():
     st.sidebar.page_link("pages/30_Admin_Home.py", label="Admin Home", icon="🖥️")
 
 
+def admin_reports_nav():
+    st.sidebar.page_link(
+        "pages/32_Admin_Reports.py", label="Manage Reports", icon="🚩"
+    )
+
+
+def admin_venues_nav():
+    st.sidebar.page_link(
+        "pages/33_Admin_Venues.py", label="Manage Venues", icon="🏟️"
+    )
+
+
+def admin_users_nav():
+    st.sidebar.page_link(
+        "pages/34_Admin_Users.py", label="Manage Users", icon="👥"
+    )
+
+
 def api_endpoint_tester_nav():
     st.sidebar.page_link(
         "pages/31_API_Endpoint_Tester.py", label="API Endpoint Tester", icon="🧪"
@@ -167,12 +185,15 @@ def SideBarLinks(show_home=False):
 
         if st.session_state["role"] == "app_admin":
             admin_home_nav()
+            admin_reports_nav()
+            admin_venues_nav()
+            admin_users_nav()
             api_endpoint_tester_nav()
 
     # There are no real accounts. This just clears the chosen persona and
     # returns to the picker on Home.py.
     if st.session_state["authenticated"]:
-        if st.sidebar.button("Switch persona", use_container_width=True):
+        if st.sidebar.button("Switch Persona", use_container_width=True):
             del st.session_state["role"]
             del st.session_state["authenticated"]
             st.switch_page("Home.py")

@@ -15,6 +15,7 @@ from backend.maya.maya_routes import maya
 from backend.tours.tour_routes import tours
 from backend.followers.follower_routes import followers
 from backend.users.user_routes import users
+from backend.venue_managers.venue_manager_routes import venue_managers
 
 
 def create_app():
@@ -55,5 +56,6 @@ def create_app():
     app.register_blueprint(tours, url_prefix="/tour")
     app.register_blueprint(followers, url_prefix="/follower")
     app.register_blueprint(users, url_prefix="/user")
+    app.register_blueprint(venue_managers, url_prefix="/venue_manager")
 
     return app
