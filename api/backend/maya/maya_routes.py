@@ -271,62 +271,6 @@ def get_user_reviews(user_id):
 # ------------------------------------------------------------
 
 
-# ------------------------------------------------------------
-# 1.4  Update a review after seeing an artist again.
-# PUT /maya/reviews/<review_id>   body: { rating?, review_text? }
-# ------------------------------------------------------------
-@maya.route("/reviews/<int:review_id>", methods=["PUT"])
-def update_review(review_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        data = request.get_json() or {}
-
-        cursor.execute("SELECT review_id FROM review WHERE review_id = %s", (review_id,))
-        if not cursor.fetchone():
-            return jsonify({"error": "Review not found"}), 404
-
-        allowed = ["rating", "review_text"]
-        update_fields = [f"{f} = %s" for f in allowed if f in data]
-        params = [data[f] for f in allowed if f in data]
-
-        if not update_fields:
-            return jsonify({"error": "No valid fields to update"}), 400
-
-        update_fields.append("last_updated = NOW()")
-        params.append(review_id)
-
-        query = f"UPDATE review SET {', '.join(update_fields)} WHERE review_id = %s"
-        cursor.execute(query, params)
-        get_db().commit()
-
-        return jsonify({"message": "Review updated successfully"}), 200
-    except Error as e:
-        current_app.logger.error(f"DB error in update_review: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-
-
-# ------------------------------------------------------------
-# 1.1  Delete one of Maya's own reviews.
-# DELETE /maya/reviews/<review_id>
-# ------------------------------------------------------------
-@maya.route("/reviews/<int:review_id>", methods=["DELETE"])
-def delete_review(review_id):
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT review_id FROM review WHERE review_id = %s", (review_id,))
-        if not cursor.fetchone():
-            return jsonify({"error": "Review not found"}), 404
-
-        cursor.execute("DELETE FROM review WHERE review_id = %s", (review_id,))
-        get_db().commit()
-        return jsonify({"message": "Review deleted successfully"}), 200
-    except Error as e:
-        current_app.logger.error(f"DB error in delete_review: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
 
 
 # ------------------------------------------------------------
