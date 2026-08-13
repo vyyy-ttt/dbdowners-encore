@@ -35,7 +35,7 @@ page_header("Log & Review", f"Welcome back, {st.session_state['first_name']}!")
 tab_write, tab_manage = st.tabs(["Write a Review", "My Reviews"])
 
 # ---------------------------------------------------------------
-# Write a review  ->  POST /maya/reviews   (User Story 1.1)
+# Write a review  ->  POST /review/reviews   (User Story 1.1)
 # ---------------------------------------------------------------
 with tab_write:
     section("Write a new review")
@@ -80,7 +80,7 @@ with tab_write:
                 payload[key] = options[choice]
 
                 try:
-                    r = requests.post(f"{API}/maya/reviews", json=payload, timeout=10)
+                    r = requests.post(f"{API}/review/reviews", json=payload, timeout=10)
                     if r.status_code == 201:
                         st.success("Review posted!")
                     else:

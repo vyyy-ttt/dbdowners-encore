@@ -73,16 +73,36 @@ st.write("")
 # ---------------------------------------------------------------
 # Following management  ->  followers blueprint  (User Story 1.3)
 #   GET    /follower/following/<id>
+#   GET    /follower/followers/<id>
 #   POST   /follower/follow/<a>/<b>
 #   DELETE /follower/follow/<a>/<b>
 # ---------------------------------------------------------------
+following = get_json(f"/follower/following/{USER_ID}") or []
+followers = get_json(f"/follower/followers/{USER_ID}") or []
+
+section("My circle")
+
+c1, c2 = st.columns(2)
+with c1:
+    tile("Following", f"{len(following)}", sub="people you follow",
+         empty=not following)
+with c2:
+    tile("Followers", f"{len(followers)}", sub="people following you",
+         empty=not followers)
+
+if followers:
+    st.caption(
+        "Following you: "
+        + ", ".join(f"@{f['username']}" for f in followers[:8])
+        + (" and more" if len(followers) > 8 else "")
+    )
+
+st.write("")
 section("Friends I follow")
 
 col_left, col_right = st.columns([2, 1], gap="large")
 
 with col_left:
-    following = get_json(f"/follower/following/{USER_ID}") or []
-
     if not following:
         st.info("You're not following anyone yet.")
     for f in following:

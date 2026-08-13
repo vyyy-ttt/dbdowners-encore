@@ -264,53 +264,11 @@ def get_user_reviews(user_id):
 
 
 # ------------------------------------------------------------
-# 1.1  Write a new review for an artist, show, or venue.
-# POST /maya/reviews
-# body: { author_user_id, rating, review_text,
-#         about_artist_id? , about_show_id? , about_venue_id? }
+# 1.1  Writing a review is handled by POST /review/reviews in the reviews
+# blueprint, which takes the same body and applies the same "exactly one
+# subject" rule. A second create route here would give this blueprint two POST
+# routes, and a blueprint may only have one of each verb.
 # ------------------------------------------------------------
-@maya.route("/reviews", methods=["POST"])
-def create_review():
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        data = request.get_json() or {}
-
-        if "author_user_id" not in data or "rating" not in data:
-            return jsonify({"error": "Missing required field: author_user_id and rating"}), 400
-
-        targets = [
-            data.get("about_artist_id"),
-            data.get("about_show_id"),
-            data.get("about_venue_id"),
-        ]
-        if sum(1 for t in targets if t) != 1:
-            return jsonify(
-                {"error": "Provide exactly one of about_artist_id, about_show_id, about_venue_id"}
-            ), 400
-
-        cursor.execute(
-            """INSERT INTO review
-                   (author_user_id, about_show_id, about_venue_id,
-                    about_artist_id, rating, review_text, last_updated)
-               VALUES (%s, %s, %s, %s, %s, %s, NOW())""",
-            (
-                data["author_user_id"],
-                data.get("about_show_id"),
-                data.get("about_venue_id"),
-                data.get("about_artist_id"),
-                data["rating"],
-                data.get("review_text"),
-            ),
-        )
-        get_db().commit()
-        return jsonify(
-            {"message": "Review created successfully", "review_id": cursor.lastrowid}
-        ), 201
-    except Error as e:
-        current_app.logger.error(f"DB error in create_review: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
 
 
 # ------------------------------------------------------------
