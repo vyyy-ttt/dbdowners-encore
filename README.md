@@ -39,6 +39,19 @@ anyone with the link — if a grader has to request access, the demo scores zero
 | **Enrica** | Tour manager | Fan sentiment stop by stop, and a way to respond on behalf of the artist |
 | **Andy** | App administrator | Reports queue, venue and artist listings, user moderation |
 
+Each persona has a landing page plus three feature pages:
+
+| Persona | Feature pages | User stories covered |
+| --- | --- | --- |
+| **Maya** | Log & Review · My Profile · Search Shows | 1.1, 1.2, 1.3, 1.4, 1.5, 1.6 |
+| **Teddy** | Venue Overview · Venue Reviews · Venue Details | 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 |
+| **Enrica** | Tour Insights · Tour Reviews · Tour Performance | 3.1, 3.2, 3.3, 3.4, 3.5, 3.6 |
+| **Andy** | Manage Reports · Manage Venues · Manage Users | 4.1, 4.2, 4.3, 4.4, 4.5, 4.6 |
+
+Andy also has an **API Endpoint Tester** page, which calls the transportation
+and tag routes directly and shows the raw request, status code and response
+body. It is a quick way to confirm the API is healthy.
+
 ## Running the project
 
 ### Prerequisites
@@ -121,9 +134,7 @@ Routes are split into one Flask blueprint per resource, under `api/backend/`.
 | `venue_managers` | `/venue_manager` | 6 |
 | `venues` | `/venue` | 10 |
 
-Signed in as the administrator, the **API Endpoint Tester** page calls the
-transportation and tag routes directly and shows the raw request, status code
-and response body, which is a quick way to check the API is healthy.
+64 routes in total, using all four HTTP verbs.
 
 ## Sample data
 

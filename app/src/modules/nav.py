@@ -60,14 +60,6 @@ def home_nav():
     st.sidebar.page_link("Home.py", label="Home", icon="🏠")
 
 
-# ---- Role: user (concertgoer) -----------------------------------------------
-
-def concertgoer_home_nav():
-    st.sidebar.page_link(
-        "pages/00_Concertgoer_Home.py", label="Concertgoer Home", icon="🎟️"
-    )
-
-
 # ---- Role: casual_concertgoer (Maya) ----------------------------------------
 
 def maya_home_nav():
@@ -91,6 +83,24 @@ def maya_search_nav():
 def venue_manager_home_nav():
     st.sidebar.page_link(
         "pages/10_Venue_Manager_Home.py", label="Venue Manager Home", icon="🏟️"
+    )
+
+
+def venue_overview_nav():
+    st.sidebar.page_link(
+        "pages/11_Venue_Overview.py", label="Venue Overview", icon="📊"
+    )
+
+
+def venue_reviews_nav():
+    st.sidebar.page_link(
+        "pages/12_Venue_Reviews.py", label="Venue Reviews", icon="💬"
+    )
+
+
+def venue_details_nav():
+    st.sidebar.page_link(
+        "pages/13_Venue_Details.py", label="Venue Details", icon="🏛️"
     )
 
 
@@ -166,9 +176,6 @@ def SideBarLinks(show_home=False):
 
     if st.session_state["authenticated"]:
 
-        if st.session_state["role"] == "user":
-            concertgoer_home_nav()
-
         if st.session_state["role"] == "casual_concertgoer":
             maya_home_nav()
             maya_log_review_nav()
@@ -177,6 +184,9 @@ def SideBarLinks(show_home=False):
 
         if st.session_state["role"] == "venue_manager":
             venue_manager_home_nav()
+            venue_overview_nav()
+            venue_reviews_nav()
+            venue_details_nav()
 
         if st.session_state["role"] == "tour_manager":
             tour_manager_home_nav()

@@ -15,11 +15,51 @@
 # Registered in rest_entry.py with url_prefix="/maya".
 ########################################################
 
+import datetime
+from decimal import Decimal
+
 from flask import Blueprint, jsonify, request, current_app
 from backend.db_connection import get_db
 from mysql.connector import Error
 
 maya = Blueprint("maya", __name__)
+
+
+# MySQL TIME columns come back as datetime.timedelta, which Flask cannot
+# serialize at all, so selecting show.start_time raises TypeError and the route
+# 500s. DATE renders as an HTTP date and DECIMAL as a string, neither of which
+# is much use to the UI either. Run rows through this before jsonify.
+
+def _time_to_str(delta):
+    total_seconds = int(delta.total_seconds())
+    sign = "-" if total_seconds < 0 else ""
+    total_seconds = abs(total_seconds)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+def as_json(row):
+    if row is None:
+        return None
+
+    cleaned = {}
+    for key, value in row.items():
+        if isinstance(value, Decimal):
+            cleaned[key] = float(value)
+        elif isinstance(value, datetime.timedelta):
+            cleaned[key] = _time_to_str(value)
+        elif isinstance(value, datetime.datetime):
+            cleaned[key] = value.isoformat(sep=" ")
+        elif isinstance(value, datetime.date):
+            cleaned[key] = value.isoformat()
+        else:
+            cleaned[key] = value
+    return cleaned
+
+
+def rows_as_json(rows):
+    return [as_json(row) for row in rows]
 
 
 # ------------------------------------------------------------
@@ -65,7 +105,7 @@ def search_shows():
         query += " ORDER BY s.show_date ASC, s.start_time ASC"
 
         cursor.execute(query, params)
-        shows = cursor.fetchall()
+        shows = rows_as_json(cursor.fetchall())
 
         current_app.logger.info(f"Retrieved {len(shows)} shows")
         return jsonify(shows), 200
@@ -224,53 +264,11 @@ def get_user_reviews(user_id):
 
 
 # ------------------------------------------------------------
-# 1.1  Write a new review for an artist, show, or venue.
-# POST /maya/reviews
-# body: { author_user_id, rating, review_text,
-#         about_artist_id? , about_show_id? , about_venue_id? }
+# 1.1  Creating a review is handled by POST /review/reviews in the reviews
+# blueprint, which takes the same body and applies the same "exactly one
+# subject" rule. A create route here as well would give this blueprint two POST
+# routes, and a blueprint may only have one of each verb.
 # ------------------------------------------------------------
-@maya.route("/reviews", methods=["POST"])
-def create_review():
-    cursor = get_db().cursor(dictionary=True)
-    try:
-        data = request.get_json() or {}
-
-        if "author_user_id" not in data or "rating" not in data:
-            return jsonify({"error": "Missing required field: author_user_id and rating"}), 400
-
-        targets = [
-            data.get("about_artist_id"),
-            data.get("about_show_id"),
-            data.get("about_venue_id"),
-        ]
-        if sum(1 for t in targets if t) != 1:
-            return jsonify(
-                {"error": "Provide exactly one of about_artist_id, about_show_id, about_venue_id"}
-            ), 400
-
-        cursor.execute(
-            """INSERT INTO review
-                   (author_user_id, about_show_id, about_venue_id,
-                    about_artist_id, rating, review_text, last_updated)
-               VALUES (%s, %s, %s, %s, %s, %s, NOW())""",
-            (
-                data["author_user_id"],
-                data.get("about_show_id"),
-                data.get("about_venue_id"),
-                data.get("about_artist_id"),
-                data["rating"],
-                data.get("review_text"),
-            ),
-        )
-        get_db().commit()
-        return jsonify(
-            {"message": "Review created successfully", "review_id": cursor.lastrowid}
-        ), 201
-    except Error as e:
-        current_app.logger.error(f"DB error in create_review: {e}")
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
 
 
 # ------------------------------------------------------------
