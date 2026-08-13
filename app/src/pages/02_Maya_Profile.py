@@ -126,22 +126,42 @@ with col_left:
 with col_right:
     with st.container(border=True):
         st.markdown("**Follow someone new**")
-        with st.form("follow_form"):
-            followee_id = st.number_input("Their user ID", min_value=1, step=1)
-            if st.form_submit_button("Follow", type="primary",
-                                     use_container_width=True):
-                try:
-                    r = requests.post(
-                        f"{API}/follower/follow/{USER_ID}/{int(followee_id)}",
-                        timeout=10,
-                    )
-                    if r.status_code == 201:
-                        st.success("Now following!")
-                        st.rerun()
-                    else:
-                        st.error(r.json().get("error", "Follow failed."))
-                except requests.exceptions.RequestException as e:
-                    st.error(f"Error connecting to the API: {e}")
+
+        # Pull every user, then drop yourself and anyone you already follow
+        all_users = get_json("/maya/users") or []
+        already_following = {f["user_id"] for f in following}
+        candidates = [
+            u for u in all_users
+            if u["user_id"] != USER_ID and u["user_id"] not in already_following
+        ]
+
+        if not candidates:
+            st.caption("No one new to follow right now.")
+        else:
+            # Label shown to the user -> hidden user_id we actually send
+            name_to_id = {
+                f"{u.get('first_name', '')} {u.get('last_name', '')} (@{u['username']})".strip(): u["user_id"]
+                for u in candidates
+            }
+            with st.form("follow_form"):
+                choice = st.selectbox(
+                    "Who do you want to follow?", list(name_to_id.keys())
+                )
+                if st.form_submit_button("Follow", type="primary",
+                                         use_container_width=True):
+                    followee_id = name_to_id[choice]
+                    try:
+                        r = requests.post(
+                            f"{API}/follower/follow/{USER_ID}/{followee_id}",
+                            timeout=10,
+                        )
+                        if r.status_code == 201:
+                            st.success("Now following!")
+                            st.rerun()
+                        else:
+                            st.error(r.json().get("error", "Follow failed."))
+                    except requests.exceptions.RequestException as e:
+                        st.error(f"Error connecting to the API: {e}")
 
 st.write("")
 
