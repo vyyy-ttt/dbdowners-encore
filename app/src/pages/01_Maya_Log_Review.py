@@ -131,7 +131,7 @@ with tab_manage:
                              type="primary", use_container_width=True):
                     try:
                         r = requests.put(
-                            f"{API}/maya/reviews/{rev['review_id']}",
+                            f"{API}/review/reviews/{rev['review_id']}",
                             json={"rating": new_rating, "review_text": new_text},
                             timeout=10,
                         )
@@ -147,7 +147,7 @@ with tab_manage:
                              use_container_width=True):
                     try:
                         r = requests.delete(
-                            f"{API}/maya/reviews/{rev['review_id']}", timeout=10)
+                            f"{API}/review/reviews/{rev['review_id']}", timeout=10)
                         if r.status_code == 200:
                             st.success("Review deleted.")
                             st.rerun()

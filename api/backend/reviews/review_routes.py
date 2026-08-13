@@ -148,7 +148,7 @@ def update_review(review_id):
 
         # Build update query dynamically based on provided fields
         allowed_fields = [
-            "rating", "review_text", "last_updated",
+            "rating", "review_text",
             "responding_tm_id", "tm_response",
             "responding_vm_id", "vm_response",
         ]
@@ -158,6 +158,7 @@ def update_review(review_id):
         if not update_fields:
             return jsonify({"error": "No valid fields to update"}), 400
 
+        update_fields.append("last_updated = NOW()")
         params.append(review_id)
         query = f"UPDATE review SET {', '.join(update_fields)} WHERE review_id = %s"
         cursor.execute(query, params)
