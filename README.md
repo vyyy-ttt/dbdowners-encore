@@ -27,8 +27,6 @@ CS 3200, Summer B 2026 — Database Design Project, Phase 3.
 
 ## Demo video
 
-**TODO: paste the public link here before submitting.** It must be viewable by
-anyone with the link — if a grader has to request access, the demo scores zero.
 https://drive.google.com/file/d/1Y8-xKRr7OxChnnmQucRfFj5nkiY3XQKF/view?usp=sharing 
 
 ## User personas
